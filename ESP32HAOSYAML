@@ -1,0 +1,39 @@
+esphome:
+  name: esphome-web-227ab8
+  friendly_name: Irrigation Flow Sensor
+  min_version: 2026.4.0
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+api:
+
+ota:
+  - platform: esphome
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# Pulse counter to detect flow
+sensor:
+  - platform: pulse_counter
+    pin:
+      number: GPIO4
+      mode: input_pullup
+    name: "Irrigation Flow Pulses"
+    unit_of_measurement: "pulses/min"
+    update_interval: 5s
+    id: irrigation_pulses
+
+# Binary sensor - True when water is flowing
+binary_sensor:
+  - platform: template
+    name: "Irrigation Water Flowing"
+    device_class: running
+    icon: mdi:water-check
+    lambda: return id(irrigation_pulses).state > 0;
